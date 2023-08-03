@@ -6,8 +6,8 @@ Usage:
 ```
 const YaesuRotatorController = require('./gs232.js');
 
-//Port, overlapp enabled, speed
-const rotatorController = new YaesuRotatorController("/dev/ttyUSB0", true, 2);
+//Port, baudrate, overlap enabled, speed
+const rotatorController = new YaesuRotatorController("/dev/ttyUSB0", 9600, true, 2);
 
 ```
 
