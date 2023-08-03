@@ -4,7 +4,7 @@
 
 ### Installation:
 ```
-git clone https://github.com/ea1nk/RemoteBox.git
+git clone https://github.com/ea1nk/GS232-Remote.git
 npm install
 ```
 
