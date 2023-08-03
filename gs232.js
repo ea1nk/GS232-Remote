@@ -4,7 +4,7 @@ const { ReadlineParser } = require('@serialport/parser-readline');
 
 class YaesuRotatorController {
   constructor(port, overlap, speed) {
-    this.port = new SerialPort({ path: port, baudRate: baudRate });
+    this.port = new SerialPort({ path: port, baudRate: 9600 });
     this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\r' }));
     //Set overlap ON-OFF
     overlap == true? this.port.write('P45\r') : this.port.write('P36\r')
