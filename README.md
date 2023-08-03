@@ -14,7 +14,7 @@ Import class into your NodeJS app:
 ```
 const YaesuRotatorController = require('./gs232.js');
 ```
-Create a rotator instace:
+Create a rotator instance:
 ```
 //Port, baudrate, overlap enabled, speed
 const rotatorController = new YaesuRotatorController("/dev/ttyUSB0", 9600, true, 2);
