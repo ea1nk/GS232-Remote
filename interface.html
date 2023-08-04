@@ -11,12 +11,40 @@
 
 <body data-bs-theme="dark">
 
-    <div class="card col-md-4 m-2">
-        <div class='card-body' id="antennas">
-            <h5 class="card-title">GS232 Controller</h5>
-            <button type="button" onclick=moveLeft() class="btn btn-secondary" data-cmd='left' id='left'>LEFT</button>
-            <button type="button" onclick=stop() class="btn  btn-secondary" data-ant='stop' id='stop'>STOP</button>
-            <button type="button" onclick=moveRight() class="btn btn-secondary" data-ant='right' id='right'>RIGHT</button>
+
+    <div class="container mt-5">
+        <!-- Upper Row: LCD Display -->
+        <div class="row bg-dark text-light p-3">
+            <div class="col-md-6">
+                <div class="lcd-display">
+                    <div class="lcd-backlight bg-success p-2 mb-2">
+                        <h5>Azimuth: <span id="azimuthValue">0</span></h5>
+                        <h5>Elevation: <span id="elevationValue">0</span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lower Row: Buttons and Combo -->
+        <div class="row mt-3">
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary btn-block" onclick=moveLeft() id="leftButton">LEFT</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary btn-block" onclick=moveStop() id="stopButton">STOP</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary btn-block" onclick=moveRight() id="rightButton">RIGHT</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <input class='col-md-6' type="text" value='0' id="sendAzimuthValue">
+                <button class="btn btn-secondary" onclick=setAzimuth()>Go!</button>
+                </select>
+            </div>
         </div>
     </div>
 </body>
@@ -24,6 +52,7 @@
 </html>
 <script>
     $(document).ready(function() {
+
         var pollStatus = setInterval(getStatus, 1000)
     })
 
@@ -39,8 +68,8 @@
 
     socket.on('status', (data) => {
         console.log('Received status from server:', data);
-        $("#azimValue").text(data.azimuth)
-        $("#eleValue").text(data.elevation)
+        $("#azimuthValue").text(data.azimuth)
+        $("#elevationValue").text(data.elevation)
 
     });
 
@@ -49,7 +78,8 @@
     }
 
     function setAzimuth(value) {
-        socket.emit('set-azimuth', value);
+        var value = $("#sendAzimuthValue").val()
+        socket.emit('set-azimuth', parseInt(value));
     }
 
     function moveLeft(value) {
@@ -60,7 +90,7 @@
         socket.emit('move-right');
     }
 
-    function stop(value) {
+    function moveStop(value) {
         socket.emit('move-stop');
     }
 </script>
