@@ -24,7 +24,7 @@ Commands available:
 rotatorController.moveLeft()
 rotatorController.moveRight()
 rotatorController.setAzimuth(azimuth)
-rotatorController.stop()
+rotatorController.moveStop()
 rotatorController.getRotatorStatus()
 
 ```
