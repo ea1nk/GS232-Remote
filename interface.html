@@ -11,39 +11,43 @@
 
 <body data-bs-theme="dark">
 
-
-    <div class="container mt-5">
-        <!-- Upper Row: LCD Display -->
-        <div class="row bg-dark text-light p-3">
-            <div class="col-md-6">
-                <div class="lcd-display">
-                    <div class="lcd-backlight bg-success p-2 mb-2">
-                        <h5>Azimuth: <span id="azimuthValue">0</span></h5>
-                        <h5>Elevation: <span id="elevationValue">0</span></h5>
+    <div class="container mt-3">
+        <div class="card col-md-8">
+            <div class="card-body">
+                <h5>GS232 Remote </h5>
+                <div class="col-md-6">
+                    <div class="lcd-display">
+                        <div class="lcd-backlight bg-success p-2 mb-2">
+                            <h5>Azimuth: <span id="azimuthValue">0</span></h5>
+                            <h5>Elevation: <span id="elevationValue">0</span></h5>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="col-md-4">
+                            <button class="btn col-md-12 btn-secondary btn-block" onclick=moveLeft() id="leftButton">LEFT</button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="col-md-12 btn btn-secondary btn-block" onclick=moveStop() id="stopButton">STOP</button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="col-md-12 btn btn-secondary btn-block" onclick=moveRight() id="rightButton">RIGHT</button>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="col-md-3">
+                            <button class="btn col-md-12 btn-secondary btn-block" onclick=setAzimuth(30) id="leftButton">EU/JA 30</button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="col-md-12 btn btn-secondary btn-block" onclick=setAzimuth(60) id="stopButton">VK/ZL 60</button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="col-md-12 btn btn-secondary btn-block" onclick=setAzimuth(210) id="rightButton">PY/LU 210</button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="col-md-12 btn btn-secondary btn-block" onclick=setAzimuth(300) id="rightButton">W/VE 300</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Lower Row: Buttons and Combo -->
-        <div class="row mt-3">
-            <div class="col-md-3">
-                <div class="row">
-                    <div class="col-md-4">
-                        <button class="btn btn-secondary btn-block" onclick=moveLeft() id="leftButton">LEFT</button>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-secondary btn-block" onclick=moveStop() id="stopButton">STOP</button>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-secondary btn-block" onclick=moveRight() id="rightButton">RIGHT</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <input class='col-md-6' type="text" value='0' id="sendAzimuthValue">
-                <button class="btn btn-secondary" onclick=setAzimuth()>Go!</button>
-                </select>
             </div>
         </div>
     </div>
