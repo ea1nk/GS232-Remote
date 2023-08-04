@@ -1,11 +1,19 @@
 # Yaesu GS232 NodeJS Class
 
-## Basic NodeJS GS232 Rotator class
+ Basic NodeJS GS232 Rotator class
+
+ Sample web interface is provided
 
 ### Installation:
 ```
 git clone https://github.com/ea1nk/GS232-Remote.git
 npm install
+```
+
+### Run sample server & interface
+```
+node server.js
+browser to http://localhost:3001
 ```
 
 ### How to include in your own system:
