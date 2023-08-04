@@ -10,7 +10,7 @@ git clone https://github.com/ea1nk/GS232-Remote.git
 npm install
 ```
 
-### Run sample server & interface
+### Run sample server & interface:
 ```
 node server.js
 browser to http://localhost:3001
