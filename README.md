@@ -20,7 +20,7 @@ browser to http://localhost:3001
 
 Import class into your NodeJS app:
 ```
-const YaesuRotatorController = require('./gs232.js');
+const YaesuRotatorController = require('./gs232');
 ```
 Create a rotator instance:
 ```
