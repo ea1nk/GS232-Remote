@@ -1,0 +1,25 @@
+{
+    "name": "gs232-remote",
+    "version": "1.0.0",
+    "description": "GS232 Simple class",
+    "main": "gs232.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ea1nk/GS232-Remote.git"
+    },
+    "author": "Juan J. Lamas - EA1NK",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ea1nk/GS232-Remote/issues"
+    },
+    "homepage": "https://github.com/ea1nk/GS232-Remote#readme",
+    "dependencies": {
+        "http": "^0.0.1-security",
+        "serialport": "^10.5.0",
+        "socket.io": "^4.7.2"
+    }
+}
