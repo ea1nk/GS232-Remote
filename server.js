@@ -1,4 +1,4 @@
-const YaesuRotatorController = require("./gs232b");
+const YaesuRotatorController = require("./gs232");
 const GS = new YaesuRotatorController("/dev/ttyUSB0", 9600, true, 2);
 const http = require("http");
 const socketIo = require("socket.io");

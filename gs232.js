@@ -1,95 +1,117 @@
 const { SerialPort } = require("serialport");
 const { ReadlineParser } = require("@serialport/parser-readline");
 
+const RESPONSE_TIMEOUT_MS = 2000;
+
 class YaesuRotatorController {
     constructor(port, baudRate, overlap, speed) {
         this.port = new SerialPort({ path: port, baudRate: baudRate });
         this.parser = this.port.pipe(new ReadlineParser({ delimiter: "\r" }));
         this.overlap = overlap;
         this.speed = speed || 3;
+        this.queue = Promise.resolve();
         this.port.on("error", err => {
             console.log(err);
         });
 
-        this.setOverlap(this.overlap);
-        this.setSpeed(this.speed);
+        this.setOverlap(this.overlap).catch(err => console.error(err));
+        this.setSpeed(this.speed).catch(err => console.error(err));
     }
 
-    sendCommand(command) {
-        const self = this;
+    // Commands are serialized: the controller has no request ids, so a reply
+    // can only be matched to a command if just one is in flight at a time.
+    sendCommand(command, expectData = false) {
         console.log(`Sending command: ${command}`);
-        return new Promise(function(resolve, reject) {
-            self._writeAndRead(`${command}\r`)
-                .then(response => resolve(response.trim()))
-                .catch(error => reject(error));
-        });
+        const result = this.queue.then(() => this._writeAndRead(`${command}\r`, expectData));
+        this.queue = result.catch(() => {});
+        return result.then(response => response.trim());
     }
 
-    _writeAndRead(data) {
+    _writeAndRead(data, expectData) {
         const self = this;
-        console.log("_write and read " + data);
         return new Promise(function(resolve, reject) {
-            const dataListener = responseData => {
+            const cleanup = () => {
+                clearTimeout(timer);
                 self.parser.removeListener("data", dataListener);
+            };
+
+            // Commands without data only answer with CR (an empty line);
+            // data commands answer CR LF + payload, so skip the empty lines.
+            const dataListener = responseData => {
+                if (expectData && !responseData.trim()) return;
+                cleanup();
                 resolve(responseData);
             };
+
+            const timer = setTimeout(() => {
+                cleanup();
+                reject(new Error(`Timeout waiting for response to ${JSON.stringify(data)}`));
+            }, RESPONSE_TIMEOUT_MS);
 
             self.parser.on("data", dataListener);
 
             self.port.write(data, err => {
                 if (err) {
-                    self.parser.removeListener("data", dataListener);
+                    cleanup();
                     reject(err);
                 }
             });
         });
     }
 
+    // L: start turning counter-clockwise (left)
     moveLeft() {
-        return this.sendCommand("A;");
+        return this.sendCommand("L");
     }
 
+    // R: start turning clockwise (right)
     moveRight() {
-        return this.sendCommand("R;");
+        return this.sendCommand("R");
     }
 
+    // S: stop everything (A would only stop azimuth rotation)
     moveStop() {
-        return this.sendCommand("S;");
+        return this.sendCommand("S");
     }
 
     setAzimuth(azimuth) {
-        if (azimuth < 0 || azimuth > 450) {
-            return Promise.reject(new Error("Invalid azimuth. Must be between 0 and 450 degrees."));
+        const max = this.overlap ? 450 : 360;
+        if (!Number.isInteger(azimuth) || azimuth < 0 || azimuth > max) {
+            return Promise.reject(new Error(`Invalid azimuth. Must be an integer between 0 and ${max} degrees.`));
         }
 
-        const command = `M${azimuth.toString().padStart(3, "0")};`;
-        return this.sendCommand(command);
+        return this.sendCommand(`M${azimuth.toString().padStart(3, "0")}`);
     }
 
+    // C2 returns azimuth and elevation: "AZ=aaa EL=eee" (GS-232B)
+    // or "+0aaa+0eee" (GS-232A).
     getRotatorStatus() {
-        const command = "C;";
-        return this.sendCommand(command).then(response => {
-            console.log(response);
-            const data = response.split("  ");
-            console.log(data);
-            const azimuth = parseInt(data[0].split("=")[1]);
-            const elevation = parseInt(data[1].split("=")[1]);
-            return { azimuth, elevation };
+        return this.sendCommand("C2", true).then(response => {
+            const match =
+                response.match(/AZ\s*=\s*(\d+)\s*EL\s*=\s*(\d+)/i) ||
+                response.match(/\+0*(\d+)\s*\+0*(\d+)/);
+            if (!match) {
+                throw new Error(`Unexpected status response: ${JSON.stringify(response)}`);
+            }
+            return { azimuth: parseInt(match[1], 10), elevation: parseInt(match[2], 10) };
         });
     }
 
+    // P45: 450 degree mode, P36: 360 degree mode
     setOverlap(overlap) {
-        const command = overlap ? "P45" : "P36";
-        return this.sendCommand(`${command};`);
+        this.overlap = !!overlap;
+        return this.sendCommand(this.overlap ? "P45" : "P36");
     }
 
+    // Xn: azimuth speed, 1 (slowest) to 4 (fastest)
     setSpeed(speed) {
-        const validSpeeds = [2, 3, 4, 5];
+        const validSpeeds = [1, 2, 3, 4];
         if (!validSpeeds.includes(speed)) {
-            return Promise.reject(new Error("Invalid speed. Must be one of: 2, 3, 4, 5"));
+            return Promise.reject(new Error("Invalid speed. Must be one of: 1, 2, 3, 4"));
         }
 
-        return this.sendCommand(`X${speed};`);
+        this.speed = speed;
+        return this.sendCommand(`X${speed}`);
     }
 }
 
